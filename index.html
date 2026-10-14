@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="東北冬之旅">
+  <title>東北冬之旅｜仙台・松島・秋保・天童・銀山・藏王</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --accent: #f59e0b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; -webkit-tap-highlight-color: transparent; }
+    
+    /* Hero Banner */
+    .hero { position: relative; height: 260px; background: #334155; color: white; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; overflow: hidden; }
+    .hero.compact { height: 140px; }
+    .hero-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; z-index: 1; }
+    .hero-shade { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%); z-index: 2; }
+    .hero-text { position: relative; z-index: 3; }
+    .hero-kicker { font-size: 12px; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+    .hero h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .hero-sub { font-size: 13px; opacity: 0.9; }
+    .countdown { font-size: 12px; margin-top: 6px; display: inline-block; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 10px; }
+    
+    /* Top Quick Bar */
+    .top-quick-bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; z-index: 10; flex-wrap: wrap; justify-content: flex-end; max-width: 70%; }
+    .btn-quick-top { background: rgba(0, 0, 0, 0.6); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); }
+    .btn-quick-top:active { background: rgba(0, 0, 0, 0.8); }
+
+    /* Main Container */
+    .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+    
+    /* Tabs Content */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    
+    /* Card Styles */
+    .card { background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+    .card h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary-dark); display: flex; align-items: center; gap: 6px; }
+    
+    /* Day Itinerary selector */
+    .days-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px; scrollbar-width: none; }
+    .days-scroll::-webkit-scrollbar { display: none; }
+    .day-btn { background: #fff; border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 13px; white-space: nowrap; cursor: pointer; color: var(--text-light); }
+    .day-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 500; }
+
+    /* Timeline / Spot items */
+    .spot-item { position: relative; padding-left: 24px; margin-bottom: 16px; border-left: 2px solid var(--border); }
+    .spot-time { font-size: 12px; color: var(--primary); font-weight: 700; margin-bottom: 2px; }
+    .spot-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .spot-desc { font-size: 13px; color: var(--text-light); line-height: 1.4; margin-bottom: 6px; }
+    .map-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--primary); background: #e0f2fe; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-weight: 500; }
+
+    /* Packing checklist */
+    .check-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+    .check-item.done span { text-decoration: line-through; color: var(--text-light); }
+
+    /* Expenses & Money */
+    .expense-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .total-box { background: #e0f2fe; padding: 12px; border-radius: 8px; margin-top: 12px; font-weight: bold; display: flex; justify-content: space-between; }
+
+    /* Bottom Navigation Bar */
+    .tabbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 env(safe-area-inset-bottom, 8px); z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .tabbar button { background: none; border: none; display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-light); gap: 3px; cursor: pointer; width: 25%; }
+    .tabbar button.active { color: var(--primary); font-weight: 600; }
+    .tabbar button span:first-child { font-size: 20px; }
+
+    /* Modal / Popup */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 16px; backdrop-filter: blur(3px); }
+    .modal-overlay.open { display: flex; }
+    .modal-card { background: #fff; width: 100%; max-width: 500px; max-height: 85vh; border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; background: #f8fafc; }
+    .modal-body { padding: 16px; overflow-y: auto; flex: 1; font-size: 14px; line-height: 1.5; }
+    .modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-light); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Header -->
+  <header class="hero" id="heroBanner">
+    <img class="hero-img" src="https://images.unsplash.com/photo-1542640244-7e672d6cef4e?q=80&w=1600&auto=format&fit=crop" alt="東北雪景">
+    <div class="hero-shade"></div>
+    
+    <!-- 右上方快捷選單 -->
+    <div class="top-quick-bar">
+      <button class="btn-quick-top" onclick="openModal('flightModal')">✈️ 航班</button>
+      <button class="btn-quick-top" onclick="openModal('hotelModal')">🏨 住宿</button>
+      <button class="btn-quick-top" onclick="openModal('carModal')">🚗 租車</button>
+    </div>
+
+    <div class="hero-text">
+      <span class="hero-kicker">2027.2.2 – 2.15 ・ 宮城 × 山形</span>
+      <h1>東北冬之旅</h1>
+      <p class="hero-sub">仙台・松島・秋保・天童・銀山・藏王</p>
+    </div>
+  </header>
+
+  <!-- Main Content Areas -->
+  <main class="content">
+
+    <!-- 1. 行程分頁 -->
+    <div id="pane-plan" class="tab-pane active">
+      <div class="days-scroll" id="daysNav">
+        <!-- 動態產生日期按鈕 -->
+      </div>
+      <div id="itineraryContent">
+        <!-- 動態產生行程內容 -->
+      </div>
+    </div>
+
+    <!-- 2. 行李分頁 -->
+    <div id="pane-packing" class="tab-pane">
+      <div class="card">
+        <h3>🧳 行李與裝備清單</h3>
+        <div id="packingList">
+          <!-- 動態載入行李項目 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 記帳分頁 (包含已付款內容合併在最下方) -->
+    <div id="pane-money" class="tab-pane">
+      <div class="card">
+        <h3>🧾 旅費記帳本</h3>
+        <div id="expenseList">
+          <!-- 記帳項目 -->
+        </div>
+        <div class="total-box">
+          <span>總計支出 (JPY)</span>
+          <span id="totalExpense">¥ 0</span>
+        </div>
+      </div>
+
+      <!-- 已付款內容合併於記帳下方 -->
+      <div class="card" style="margin-top: 24px; border-top: 2px dashed var(--border);">
+        <h3>📋 已付款內容總覽</h3>
+        <div id="paidContentList" style="font-size: 13px; color: var(--text-light);">
+          <!-- 已付款清單 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 匯率分頁 -->
+    <div id="pane-rate" class="tab-pane">
+      <div class="card">
+        <h3>💱 日幣台幣匯率換算</h3>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 13px; color: var(--text-light);">參考匯率 (1 JPY = ? TWD)</label>
+          <input type="number" id="exchangeRate" value="0.21" step="0.005" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;" oninput="calcRate()">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 13px; color: var(--text-light);">日幣金額 (JPY)</label>
+          <input type="number" id="jpyInput" placeholder="輸入日幣金額" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; margin-top: 4px;" oninput="calcRate()">
+        </div>
+        <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center;">
+          折合台幣：<span id="twdResult" style="color: var(--primary);">0</span> TWD
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="tabbar">
+    <button class="active" onclick="switchTab('plan', this)"><span>🗾</span>行程</button>
+    <button onclick="switchTab('packing', this)"><span>🧳</span>行李</button>
+    <button onclick="switchTab('money', this)"><span>🧾</span>記帳</button>
+    <button onclick="switchTab('rate', this)"><span>💱</span>匯率</button>
+  </nav>
+
+  <!-- Modals for Quick Access (Flight / Hotel / Car) -->
+  <div id="flightModal" class="modal-overlay" onclick="outsideClose(event, 'flightModal')">
+    <div class="modal-card">
+      <div class="modal-header"><span>✈️ 航班資訊</span><button class="modal-close" onclick="closeModal('flightModal')">✕</button></div>
+      <div class="modal-body">
+        <p><b>去程：</b> 2027/02/02 台北 (TPE) ➔ 仙台 (SDJ) 或轉機</p>
+        <p style="margin-top: 8px;"><b>回程：</b> 2027/02/15 仙台 ➔ 台北</p>
+        <p style="margin-top: 8px; color: var(--text-light);">請自行確認機票代號與行李限重規定。</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="hotelModal" class="modal-overlay" onclick="outsideClose(event, 'hotelModal')">
+    <div class="modal-card">
+      <div class="modal-header"><span>🏨 詳細住宿資訊</span><button class="modal-close" onclick="closeModal('hotelModal')">✕</button></div>
+      <div class="modal-body" id="hotelModalBody">
+        <!-- 住宿清單 -->
+      </div>
+    </div>
+  </div>
+
+  <div id="carModal" class="modal-overlay" onclick="outsideClose(event, 'carModal')">
+    <div class="modal-card">
+      <div class="modal-header"><span>🚗 詳細租車資訊</span><button class="modal-close" onclick="closeModal('carModal')">✕</button></div>
+      <div class="modal-body" id="carModalBody">
+        <!-- 租車清單 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 模擬旅遊資料
+    const tripData = {
+      days: [
+        { date: '2/2 (一)', title: 'Day 1: 抵達仙台', spots: [{ time: '17:05', name: '抵達機場', desc: '辦理入境與前往市區飯店', query: '仙台機場' }] },
+        { date: '2/3 (二)', title: 'Day 2: 松島海岸', spots: [{ time: '09:30', name: '松島遊覽船', desc: '欣賞日本三景之一雪景', query: '松島海岸' }] },
+        { date: '2/4 (三)', title: 'Day 3: 秋保溫泉', spots: [{ time: '10:00', name: '秋保大滝', desc: '冬季雪瀑布景觀', query: '秋保大滝' }] },
+        { date: '2/5 (四)', title: 'Day 4: 天童溫泉', spots: [{ time: '10:00', name: '將棋村', desc: '參觀當地將棋文化', query: '天童溫泉' }] },
+        { date: '2/6 (五)', title: 'Day 5: 銀山溫泉', spots: [{ time: '14:00', name: '銀山溫泉街', desc: '夢幻大正浪漫雪景', query: '銀山溫泉' }] },
+        { date: '2/7 (六)', title: 'Day 6: 藏王樹冰', spots: [{ time: '10:00', name: '藏王纜車', desc: '欣賞世界奇景雪怪樹冰', query: '藏王纜車' }] }
+      ],
+      packing: ['防滑雪靴', '發熱衣褲', '羽絨外套', '護照與機票', '日幣現鈔與信用卡', '常備藥品', '充電器與行動電源'],
+      expenses: [
+        { item: '機票費用 (已付)', amount: 24500, currency: 'TWD' },
+        { item: '仙台住宿 (已付)', amount: 45000, currency: 'JPY' },
+        { item: '租車預定 (已付)', amount: 32000, currency: 'JPY' }
+      ],
+      hotels: [
+        { name: '仙台大都會飯店', address: '仙台市青葉區中央 1-1-1', query: '仙台大都會飯店' },
+        { name: '銀山溫泉古勢起屋別館', address: '山形縣尾花澤市銀山新畑416', query: '銀山溫泉 古勢起屋別館' }
+      ],
+      cars: [
+        { company: 'TOYOTA Rent a Car 仙台車站前店', carType: 'Sクラス (Aqua 或同級)', confirmation: '#TR-8839201' }
+      ]
+    };
+
+    // 初始化渲染
+    function initApp() {
+      // 1. 渲染行程天數按鈕
+      const daysNav = document.getElementById('daysNav');
+      tripData.days.forEach((d, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `day-btn ${idx === 0 ? 'active' : ''}`;
+        btn.innerText = d.date;
+        btn.onclick = () => selectDay(idx, btn);
+        daysNav.appendChild(btn);
+      });
+      renderDayContent(0);
+
+      // 2. 渲染行李清單
+      const packingList = document.getElementById('packingList');
+      tripData.packing.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'check-item';
+        div.innerHTML = `<input type="checkbox" id="pack_${idx}" onchange="toggleCheck(this)"><label for="pack_${idx}"><span>${item}</span></label>`;
+        packingList.appendChild(div);
+      });
+
+      // 3. 渲染記帳與已付款
+      const expenseList = document.getElementById('expenseList');
+      const paidContentList = document.getElementById('paidContentList');
+      let totalJpy = 0;
+
+      tripData.expenses.forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'expense-row';
+        row.innerHTML = `<span>${ex.item}</span><b>${ex.currency === 'JPY' ? '¥ ' + ex.amount.toLocaleString() : ex.amount.toLocaleString() + ' ' + ex.currency}</b>`;
+        expenseList.appendChild(row);
+        if(ex.currency === 'JPY') totalJpy += ex.amount;
+
+        const paidRow = document.createElement('div');
+        paidRow.style.padding = '6px 0';
+        paidRow.style.borderBottom = '1px solid #eee';
+        paidRow.innerText = `✔️ ${ex.item}：${ex.currency === 'JPY' ? '¥' : ''}${ex.amount.toLocaleString()}`;
+        paidContentList.appendChild(paidRow);
+      });
+      document.getElementById('totalExpense').innerText = '¥ ' + totalJpy.toLocaleString();
+
+      // 4. 渲染住宿與租車 Modal 內容
+      const hotelBody = document.getElementById('hotelModalBody');
+      tripData.hotels.forEach(h => {
+        hotelBody.innerHTML += `<div style="margin-bottom:12px;"><b>${h.name}</b><br><span style="color:var(--text-light);">${h.address}</span><br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.query)}" target="_blank">📍 開啟 Google Maps</a></div>`;
+      });
+
+      const carBody = document.getElementById('carModalBody');
+      tripData.cars.forEach(c => {
+        carBody.innerHTML += `<div><b>${c.company}</b><br>車型：${c.carType}<br>預約編號：${c.confirmation}</div>`;
+      });
+    }
+
+    // 切換行程天數
+    function selectDay(idx, btnElement) {
+      document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+      renderDayContent(idx);
+    }
+
+    function renderDayContent(idx) {
+      const container = document.getElementById('itineraryContent');
+      const day = tripData.days[idx];
+      let html = `<div class="card"><h3>📅 ${day.title}</h3>`;
+      day.spots.forEach(spot => {
+        // 使用標準 Google Maps APP 喚醒連結格式
+        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.query)}`;
+        html += `
+          <div class="spot-item">
+            <div class="spot-time">${spot.time}</div>
+            <div class="spot-title">${spot.name}</div>
+            <div class="spot-desc">${spot.desc}</div>
+            <a class="map-link" href="${mapUrl}" target="_blank">
+              📍 在 Google Maps 中開啟
+            </a>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // 分頁切換
+    function switchTab(tabId, btnElement) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tabbar button').forEach(b => b.classList.remove('active'));
+      document.getElementById('pane-' + tabId).classList.add('active');
+      btnElement.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // 切換 Banner 高度
+      const hero = document.getElementById('heroBanner');
+      if (tabId === 'plan') {
+        hero.classList.remove('compact');
+      } else {
+        hero.classList.add('compact');
+      }
+    }
+
+    // 行李打勾狀態切換
+    function toggleCheck(checkbox) {
+      if (checkbox.checked) {
+        checkbox.parentElement.classList.add('done');
+      } else {
+        checkbox.parentElement.classList.remove('done');
+      }
+    }
+
+    // 匯率計算
+    function calcRate() {
+      const rate = parseFloat(document.getElementById('exchangeRate').value) || 0;
+      const jpy = parseFloat(document.getElementById('jpyInput').value) || 0;
+      const twd = Math.round(jpy * rate);
+      document.getElementById('twdResult').innerText = twd.toLocaleString();
+    }
+
+    // Modal 控制
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('open');
+    }
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('open');
+    }
+    function outsideClose(event, modalId) {
+      if (event.target.classList.contains('modal-overlay')) {
+        closeModal(modalId);
+      }
+    }
+
+    // 頁面載入後初始化
+    window.onload = initApp;
+  </script>
+</body>
+</html>
